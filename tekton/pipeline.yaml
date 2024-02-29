@@ -17,19 +17,12 @@ spec:
       default: main
     - name: build-image
   tasks:
-    - name: lint
+    - name: init
       workspaces:
         - name: source
-          workspace: pipeline-workspace
+          workspace: pipeline-workspace          
       taskRef:
-        name: flake8
-      params:
-      - name: image
-        value: "python:3.9-slim"
-      - name: args
-        value: ["--count","--max-complexity=10","--max-line-length=127","--statistics"]
-      runAfter:
-        - clone
+        name: cleanup
 
     - name: clone
       workspaces:
@@ -44,6 +37,20 @@ spec:
         value: $(params.branch)
       runAfter:
         - init
+
+    - name: lint
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      taskRef:
+        name: flake8
+      params:
+      - name: image
+        value: "python:3.9-slim"
+      - name: args
+        value: ["--count","--max-complexity=10","--max-line-length=127","--statistics"]
+      runAfter:
+        - clone
 
     - name: tests
       workspaces:
